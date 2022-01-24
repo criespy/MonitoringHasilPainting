@@ -4,19 +4,29 @@ from django.utils.translation import gettext_lazy as _
 class Barang(models.Model):
     part_number = models.CharField(max_length=18, unique=True)
     description = models.CharField(max_length=32)
-    color_code = models.CharField(max_length=6, null=True)
+    color_code = models.CharField(max_length=6, blank=True)
+
+    def __str__(self):
+        judul_barang = self.part_number + " --- " + self.description
+        return judul_barang
 
 class RencanaProduksi(models.Model):
-    id_rencana = models.IntegerField()
     tanggal = models.DateTimeField()
-    part_number = models.ForeignKey(Barang, on_delete=models.CASCADE)
-    qty = models.IntegerField()
-
     class StatusRencana(models.TextChoices):
         ACTIVE = 'A', _('Active')
         CANCELED = 'C', _('Canceled')
 
     status = models.CharField(max_length=1, choices=StatusRencana.choices, default=StatusRencana.ACTIVE)
+
+class RencanaProduksiDetail(models.Model):
+    line_number = models.IntegerField(max_length=2)
+    rencana_produksi = models.ForeignKey(RencanaProduksi, on_delete=models.CASCADE, related_name='details')
+    part_number = models.ForeignKey(Barang, on_delete=models.CASCADE)
+    qty = models.IntegerField()
+
+    def __str__(self):
+        judul = self.line_number + " " + self.part_number
+        return judul
 
 class HasilProduksi(models.Model):
     id_rencana_produksi = models.ForeignKey(RencanaProduksi, on_delete=models.CASCADE)
