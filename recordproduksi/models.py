@@ -36,6 +36,15 @@ class HasilProduksi(models.Model):
     rencana_produksi = models.ForeignKey(RencanaProduksi, on_delete=models.CASCADE)
     timestamp = models.TimeField()
 
+    def __str__(self):
+        judul = "Hasil Produksi " + str(self.rencana_produksi.tanggal)
+        return judul
+
+class HasilProduksiDetail(models.Model):
+    hasil_produksi = models.ForeignKey(HasilProduksi, on_delete=models.CASCADE, related_name='details')
+    part_number = models.ForeignKey(Barang, on_delete=models.CASCADE)
+    qty = models.IntegerField()
+
     class StatusOutput(models.TextChoices):
         OK_DIRECT = 'OKD', _('OK Direct')
         OK_BUFF_BINTIK = 'OKB1', _('OK Buffing Bintik')
@@ -51,12 +60,3 @@ class HasilProduksi(models.Model):
         NG_POP = 'NG6', _('NG Pop')
 
     status = models.CharField(max_length=4, choices=StatusOutput.choices, default=StatusOutput.OK_DIRECT)
-
-    def __str__(self):
-        judul = "Hasil Produksi " + str(self.rencana_produksi.tanggal)
-        return judul
-
-class HasilProduksiDetail(models.Model):
-    hasil_produksi = models.ForeignKey(HasilProduksi, on_delete=models.CASCADE, related_name='details')
-    part_number = models.ForeignKey(Barang, on_delete=models.CASCADE)
-    qty = models.IntegerField()
