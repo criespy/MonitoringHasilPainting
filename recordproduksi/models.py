@@ -18,20 +18,22 @@ class RencanaProduksi(models.Model):
 
     status = models.CharField(max_length=1, choices=StatusRencana.choices, default=StatusRencana.ACTIVE)
 
+    def __str__(self):
+        judul = "Rencana Produksi" + " " + str(self.tanggal)
+        return judul
+
 class RencanaProduksiDetail(models.Model):
-    line_number = models.IntegerField(max_length=2)
+    line_number = models.IntegerField()
     rencana_produksi = models.ForeignKey(RencanaProduksi, on_delete=models.CASCADE, related_name='details')
     part_number = models.ForeignKey(Barang, on_delete=models.CASCADE)
     qty = models.IntegerField()
 
     def __str__(self):
-        judul = self.line_number + " " + self.part_number
+        judul = str(self.line_number) + " " + self.part_number.part_number
         return judul
 
 class HasilProduksi(models.Model):
-    id_rencana_produksi = models.ForeignKey(RencanaProduksi, on_delete=models.CASCADE)
-    part_number = models.ForeignKey(Barang, on_delete=models.CASCADE)
-    qty = models.IntegerField()
+    rencana_produksi = models.ForeignKey(RencanaProduksi, on_delete=models.CASCADE)
     timestamp = models.TimeField()
 
     class StatusOutput(models.TextChoices):
@@ -49,3 +51,12 @@ class HasilProduksi(models.Model):
         NG_POP = 'NG6', _('NG Pop')
 
     status = models.CharField(max_length=4, choices=StatusOutput.choices, default=StatusOutput.OK_DIRECT)
+
+    def __str__(self):
+        judul = "Hasil Produksi " + str(self.rencana_produksi.tanggal)
+        return judul
+
+class HasilProduksiDetail(models.Model):
+    hasil_produksi = models.ForeignKey(HasilProduksi, on_delete=models.CASCADE, related_name='details')
+    part_number = models.ForeignKey(Barang, on_delete=models.CASCADE)
+    qty = models.IntegerField()
